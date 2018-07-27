@@ -7,6 +7,28 @@ import {
   SET_CURRENT_USER
 } from "./types";
 
+// Add Experience
+export const addNewExperience = (expData, history) => dispatch => {
+  axios
+    .post("/api/profile/experience", expData)
+    .then(res => history.push("/dashboard"))
+    .catch(err => {
+      dispatch({ type: GET_ERRORS, payload: err.response.data });
+      console.log(err);
+    });
+};
+
+// Add Experience
+export const addNewEducation = (eduData, history) => dispatch => {
+  axios
+    .post("/api/profile/education", eduData)
+    .then(res => history.push("/dashboard"))
+    .catch(err => {
+      dispatch({ type: GET_ERRORS, payload: err.response.data });
+      console.log(err);
+    });
+};
+
 // Get Current Profile
 export const getCurrentProfile = () => dispatch => {
   dispatch(setProfileLoading());
