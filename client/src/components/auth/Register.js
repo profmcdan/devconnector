@@ -1,7 +1,11 @@
 import React from "react";
+import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 import { Component } from "react";
-import axios from "axios";
-import classnames from "classnames";
+// import classnames from "classnames";
+import { connect } from "react-redux";
+import { registerUser } from "./../../actions/authActions";
+import TextFieldGroup from "./../common/TextFieldGroup";
 
 class Register extends Component {
   constructor() {
@@ -15,6 +19,18 @@ class Register extends Component {
     };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push("/dashboard");
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
+    }
   }
 
   onChange(e) {
@@ -31,17 +47,20 @@ class Register extends Component {
     };
     console.log(newUser);
     // This will be done in redux and not here.
-    axios
-      .post("/api/users/register", newUser)
-      .then(res => console.log(res.data))
-      .catch(err => {
-        console.log(err.response.data);
-        this.setState({ errors: err.response.data });
-      });
+    // axios
+    //   .post("/api/users/register", newUser)
+    //   .then(res => console.log(res.data))
+    //   .catch(err => {
+    //     console.log(err.response.data);
+    //     this.setState({ errors: err.response.data });
+    //   });
+
+    this.props.registerUser(newUser, this.props.history);
   }
 
   render() {
     const { errors } = this.state; // same as const errors = this.state.errors;
+    // const { user } = this.props.auth; // Destructuring
 
     return (
       <div className="register">
@@ -53,70 +72,39 @@ class Register extends Component {
                 Create your DevConnector account
               </p>
               <form noValidate onSubmit={this.onSubmit}>
-                <div className="form-group">
-                  <input
-                    type="text"
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.name
-                    })}
-                    placeholder="Name"
-                    name="name"
-                    value={this.state.name}
-                    onChange={this.onChange}
-                  />
-                  {errors.name && (
-                    <div className="invalid-feedback">{errors.name}</div>
-                  )}
-                </div>
-                <div className="form-group">
-                  <input
-                    type="email"
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.email
-                    })}
-                    placeholder="Email Address"
-                    value={this.state.email}
-                    name="email"
-                    onChange={this.onChange}
-                  />
-                  {errors.email && (
-                    <div className="invalid-feedback">{errors.email}</div>
-                  )}
-                  <small className="form-text text-muted">
-                    This site uses Gravatar so if you want a profile image, use
-                    a Gravatar email
-                  </small>
-                </div>
-                <div className="form-group">
-                  <input
-                    type="password"
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.password
-                    })}
-                    placeholder="Password"
-                    name="password"
-                    value={this.state.password}
-                    onChange={this.onChange}
-                  />
-                  {errors.password && (
-                    <div className="invalid-feedback">{errors.password}</div>
-                  )}
-                </div>
-                <div className="form-group">
-                  <input
-                    type="password"
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.password2
-                    })}
-                    placeholder="Confirm Password"
-                    name="password2"
-                    value={this.state.password2}
-                    onChange={this.onChange}
-                  />
-                  {errors.password2 && (
-                    <div className="invalid-feedback">{errors.password2}</div>
-                  )}
-                </div>
+                <TextFieldGroup
+                  placeholder="Name"
+                  name="name"
+                  type="text"
+                  value={this.state.name}
+                  onChange={this.onChange}
+                  error={errors.name}
+                />
+                <TextFieldGroup
+                  placeholder="Email Address"
+                  name="email"
+                  type="email"
+                  value={this.state.email}
+                  onChange={this.onChange}
+                  error={errors.email}
+                  info="This site uses Gravatar so if you want a profile image, use a Gravatar email"
+                />
+                <TextFieldGroup
+                  placeholder="Password"
+                  name="password"
+                  type="password"
+                  value={this.state.password}
+                  onChange={this.onChange}
+                  error={errors.password}
+                />
+                <TextFieldGroup
+                  placeholder="Confirm Password"
+                  name="password2"
+                  type="password"
+                  value={this.state.password2}
+                  onChange={this.onChange}
+                  error={errors.password2}
+                />
                 <input type="submit" className="btn btn-info btn-block mt-4" />
               </form>
             </div>
@@ -127,4 +115,19 @@ class Register extends Component {
   }
 }
 
-export default Register;
+// Good Practice
+Register.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors
+});
+
+export default connect(
+  mapStateToProps,
+  { registerUser }
+)(withRouter(Register));
