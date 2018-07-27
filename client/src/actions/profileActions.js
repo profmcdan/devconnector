@@ -73,6 +73,45 @@ export const createProfile = (profileData, history) => dispatch => {
     });
 };
 
+export const deleteEducation = id => dispatch => {
+  if (window.confirm("Are you sure? This cannot be undone!")) {
+    axios
+      .delete(`/api/profile//education/{id}`)
+      .then(res =>
+        dispatch({
+          type: GET_PROFILE,
+          payload: res.data
+        })
+      )
+      .catch(err => {
+        dispatch({
+          type: GET_ERRORS,
+          payload: err.response.data
+        });
+      });
+  }
+};
+
+// Delete Experience
+export const deleteExperience = id => dispatch => {
+  if (window.confirm("Are you sure? This cannot be undone!")) {
+    axios
+      .delete(`/api/profile//experience/{id}`)
+      .then(res =>
+        dispatch({
+          type: GET_PROFILE,
+          payload: res.data
+        })
+      )
+      .catch(err => {
+        dispatch({
+          type: GET_ERRORS,
+          payload: err.response.data
+        });
+      });
+  }
+};
+
 // Delete the account
 export const deleteAccount = () => dispatch => {
   if (window.confirm("Are you sure? This cannot be undone!")) {
