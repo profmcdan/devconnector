@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "description": "Social network for developers",
   "main": "server.js",
+  "engine": {
+    "node": "8.11.3"
+  },
   "scripts": {
     "client-install": "npm install --prefix client",
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
   },
   "author": "Ale Daniel",
   "license": "MIT",
